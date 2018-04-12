@@ -35,3 +35,5 @@ console.log('status', game.status)
 game.makeGuess([0, 1, 2, 3])
 console.log(game.tentatives())
 console.log('status', game.status)
+
+console.log(game.guessesAll())

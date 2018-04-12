@@ -5,41 +5,61 @@ let take = require('lodash/take')
 let takeR = require('lodash/takeRight')
 
 let GameStatus = { NEW: 0, PLAYING: 1, FINISHED: 2 }
-let randomNums = function() {
+let randomNums = function () {
   return take(shuffle(range(10)), 4)
+}
+let orderResult = function (x, y) {
+  if (x === '+') {
+    if (y === '+') return 0
+    else return -1
+  } else if (x === '-') {
+    if (y === '+') return 1
+    else if (y === '-') return 0
+    else return -1
+  } else return 1
 }
 
 class Game {
-  constructor() {
+  constructor () {
     this.status = GameStatus.NEW
   }
 
-  start() {
+  start () {
     this.status = GameStatus.PLAYING
-    this.secret = randomNums
+    this.secret = randomNums()
     this.allGuesses = []
   }
 
-  giveUp() {
+  giveUp () {
     if (this.status === GameStatus.PLAYING) this.status = GameStatus.FINISHED
   }
 
-  makeGuess() {
-    if (this.status == GameStatus.PLAYING) {
-      this.allGuesses.push(this.tentatives())
+  makeGuess (g) {
+    if (this.status === GameStatus.PLAYING) {
+      this.allGuesses.push({guess: g, result: this.resultForGuess(g)})
       if (this.tentatives() === 10) this.status = GameStatus.FINISHED
     }
   }
 
-  guessesAll() { return this.allGuesses }
-  guessesReverse() { return this.allGuesses.reverse() }
-  guessesLast() { return takeR(this.allGuesses) }
+  resultForGuess (g) {
+    let out = []
+    for (let i = 0; i < g.length; i++) {
+      if (g[i] === this.secret[i]) out.push('+')
+      else if (this.secret.includes(g[i])) out.push('-')
+      else out.push('.')
+    }
+    return out.sort(orderResult)
+  }
 
-  tentatives() {
+  guessesAll () { return this.allGuesses }
+  guessesReverse () { return this.allGuesses.reverse() }
+  guessesLast () { return takeR(this.allGuesses) }
+
+  tentatives () {
     return this.allGuesses.length
   }
 
-  isMatch(n) {
+  isMatch (n) {
     return isEqual(n, this.secret)
   }
 }
