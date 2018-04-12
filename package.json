@@ -3,14 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "watch": { "test": "{src,spec}/*.js" },
   "scripts": {
-    "test": "standard src/**/*.js && jasmine"
+    "test": "standard src/**/*.js && jasmine",
+    "watch": "npm-watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "jasmine": "^3.1.0",
+    "npm-watch": "^0.3.0",
+    "readline-sync": "^1.4.9",
     "standard": "^11.0.1"
   },
   "dependencies": {

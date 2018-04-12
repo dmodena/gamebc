@@ -2,7 +2,6 @@ let isEqual = require('lodash/isEqual')
 let range = require('lodash/range')
 let shuffle = require('lodash/shuffle')
 let take = require('lodash/take')
-let takeR = require('lodash/takeRight')
 
 let GameStatus = { NEW: 0, PLAYING: 1, FINISHED: 2 }
 let randomNums = function () {
@@ -37,6 +36,7 @@ class Game {
   makeGuess (g) {
     if (this.status === GameStatus.PLAYING) {
       this.allGuesses.push({guess: g, result: this.resultForGuess(g)})
+      if (this.isMatch(g)) this.status = GameStatus.FINISHED
       if (this.tentatives() === 10) this.status = GameStatus.FINISHED
     }
   }
@@ -53,7 +53,7 @@ class Game {
 
   guessesAll () { return this.allGuesses }
   guessesReverse () { return this.allGuesses.reverse() }
-  guessesLast () { return takeR(this.allGuesses) }
+  guessesLast () { return this.allGuesses[this.allGuesses.length - 1] }
 
   tentatives () {
     return this.allGuesses.length
@@ -62,6 +62,8 @@ class Game {
   isMatch (n) {
     return isEqual(n, this.secret)
   }
+
+  static get GameStatus () { return GameStatus }
 }
 
 module.exports = Game
