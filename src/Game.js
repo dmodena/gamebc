@@ -4,6 +4,7 @@ let shuffle = require('lodash/shuffle')
 let take = require('lodash/take')
 
 let GameStatus = { NEW: 0, PLAYING: 1, FINISHED: 2 }
+let GameOutcome = { NONE: 0, WON: 1, LOST: 2, QUIT: 3 }
 let randomNums = function () {
   return take(shuffle(range(10)), 4)
 }
@@ -21,6 +22,7 @@ let orderResult = function (x, y) {
 class Game {
   constructor () {
     this.status = GameStatus.NEW
+    this.outcome = GameOutcome.NONE
   }
 
   start () {
@@ -29,15 +31,24 @@ class Game {
     this.allGuesses = []
   }
 
-  giveUp () {
-    if (this.status === GameStatus.PLAYING) this.status = GameStatus.FINISHED
+  quit () {
+    if (this.status === GameStatus.PLAYING) {
+      this.status = GameStatus.FINISHED
+      this.outcome = GameOutcome.QUIT
+    }
   }
 
   makeGuess (g) {
     if (this.status === GameStatus.PLAYING) {
       this.allGuesses.push({guess: g, result: this.resultForGuess(g)})
-      if (this.isMatch(g)) this.status = GameStatus.FINISHED
-      if (this.tentatives() === 10) this.status = GameStatus.FINISHED
+      if (this.isMatch(g)) {
+        this.status = GameStatus.FINISHED
+        this.outcome = GameOutcome.WON
+      }
+      if (this.tentatives() === 10) {
+        this.status = GameStatus.FINISHED
+        this.outcome = (this.outcome === GameOutcome.WON) ? GameOutcome.WON : GameOutcome.LOST
+      }
     }
   }
 
@@ -64,6 +75,7 @@ class Game {
   }
 
   static get GameStatus () { return GameStatus }
+  static get GameOutcome () { return GameOutcome }
 }
 
 module.exports = Game
